@@ -1,0 +1,219 @@
+@startuml
+!define COMMENT(x) <color:grey>x</color>
+
+'abstract        abstract
+'abstract class  "abstract class"
+'annotation      annotation
+'circle          circle
+'()              circle_short_form
+
+
+class CcsHospitalDataExtracter {
+hospital_types = [ACADEMY_HOSPITAL, GENERAl_HOSPITAL]
+create_plot(ccs_hospital_info): plot
+fetch_hsmr_reports()
+read_hsmr_files()
+main(self)
+}
+
+class HsmrReportsFetcher {
+fetch_files(hospital_types)
+COMMENT(Overall (Search and download PDF reports))
+download_hsmr_reports_from_sgc_codes(agb_dataset, hos_type)
+'(Search and download PDF reports based on agb code)
+get_info_agbcode_info_from_api(hospital_type)
+'(Method to get the name, information and corresponded agb code)
+
+}
+
+class LocalSettings {
+}
+
+class __LocalSettings {
+settings: dict
+load_settings()
+is_settings_loaded(): Boolean
+get_setting(setting_key): int/str
+get_all_settings(): dict
+}
+
+class FileDownloader {
+download_pdf_from_url(cls, pdf_url, file_name)
+}
+
+class GoogleCustomSearchApi {
+api_key
+search_engine_id
+search(search_text)
+google_search(search_term)
+search_for_hsmr_pdf_file(results)
+}
+
+class AgbcodeApiHandler {
+apiUrl
+data
+hospital_type
+temp_file_name
+has_data() : bool
+get_data_as_json() : List
+get_agb_code_data() : Obj
+extract_data_from_api()
+get_temp_file_path() : str
+has_temp_file() : bool
+extract_data_from_temp_json_file()
+create_json_output_file()
+extract_data(create_temp_file_if_not_present)
+}
+
+class AgbCodeData {
+df : dataframe
+get_dataframe() : pd dataframe
+remove_empty_agb_codes()
+get_agb_codes()
+}
+
+class Plotter {
+ccs_data : list of obj
+has_data_to_plot() : bool
+create_plot()
+show_plot()
+}
+
+class HsmrReportsReader {
+ccs_category_info
+read_files()
+get_ccs_category_info()
+parse_single_hsmr_file(file_path) : obj
+get_hsmr_file_paths() : list of str
+}
+
+class CcsClassification {
+file_path : str
+df : pd.dataframe
+read_csv_file()
+get_dataframe() : pd.dataframe
+has_pdf_key() : bool
+add_pdf_key_row()
+get_pdf_key_info() : pd.dataframe
+get_pdf_key(cls) : str
+get_ccs_index(cls) : str
+get_ccs_category(cls) : str
+}
+
+class HsmrReportHandler {
+file_path
+ccs_category_data
+hospital_type
+hospital_code
+hospital_name
+hospital_place
+get_ccs_info()
+}
+
+class CcsHospitalInfo {
+hospital_type: str
+hospital_code: str
+hospital_name: str
+hospital_place: str
+ccs_df: pd Dataframe
+get_dataframe() : pd Dataframe
+get_hospital_name() : str
+get_hospital_type() : str
+is_umc()
+get_real_died_values() : np.array
+get_total_real_died_number() : int
+get_admissions_values() : np.array
+get_total_admissions_number() : int
+create_csv_file()
+get_from_csv(hospital_type, hospital_code, hospital_name, hospital_place)
+}
+
+object ACADEMY_HOSPITAL {
+"0602"
+}
+object GENERAl_HOSPITAL {
+"0601"
+}
+
+class HsmrParserFactory {
+get_instance(parser_type)
+}
+
+object HSMR_REPORT_PDF {
+"HSMR_REPORT_PDF"
+}
+object HSMR_REPORT_TEXT {
+"HSMR_REPORT_TEXT"
+}
+
+class HsmrPdfParser{
+read_file()
+}
+
+class HsmrTextParser{
+read_file()
+}
+
+abstract class HsmrParser {
+file_path : str
+hospital_type : str
+hospital_code : str
+hospital_name : str
+hospital_city : str
+file_content
+has_file_path() : bool
+get_hospital_name() : str
+is_umc()
+has_file_content() : bool
+write_content_to_text_file(export_file_path)
+extract_ccs_numbers(ccs_info)
+read_file()
+}
+
+__LocalSettings <|-- LocalSettings
+LocalSettings <-- HsmrReportsFetcher
+LocalSettings <-- FileDownloader
+LocalSettings <-- GoogleCustomSearchApi
+LocalSettings <-- AgbcodeApiHandler
+LocalSettings <-- CcsHospitalDataExtracter
+LocalSettings <-- HsmrReportHandler
+LocalSettings <-- HsmrReportsReader
+LocalSettings <-- HsmrParser
+
+
+FileDownloader <-- HsmrReportsFetcher
+GoogleCustomSearchApi <-- HsmrReportsFetcher
+AgbCodeData <-- AgbcodeApiHandler
+AgbcodeApiHandler <-- HsmrReportsFetcher
+HsmrReportsFetcher <-- CcsHospitalDataExtracter
+Plotter <-- CcsHospitalDataExtracter
+CcsClassification <-- HsmrReportsReader
+HsmrReportHandler <-- HsmrReportsReader
+ACADEMY_HOSPITAL <-- CcsHospitalInfo
+CcsHospitalInfo <-- HsmrReportHandler
+HsmrParserFactory <-- HsmrReportHandler
+
+HSMR_REPORT_TEXT <-- HsmrParserFactory
+HSMR_REPORT_PDF <-- HsmrParserFactory
+HSMR_REPORT_TEXT <-- HsmrReportHandler
+HSMR_REPORT_PDF <-- HsmrReportHandler
+
+CcsClassification <-- HsmrParser
+CcsHospitalInfo <-- HsmrParser
+ACADEMY_HOSPITAL <-- HsmrParser
+
+HsmrParser <|-- HsmrPdfParser
+HsmrParser <|-- HsmrTextParser
+HsmrPdfParser <-- HsmrParserFactory
+HsmrTextParser <-- HsmrParserFactory
+
+HsmrReportsReader <-- CcsHospitalDataExtracter
+ACADEMY_HOSPITAL <-- CcsHospitalDataExtracter
+GENERAl_HOSPITAL <-- CcsHospitalDataExtracter
+
+
+@enduml
+
+//www.plantuml.com/plantuml/png/X5PBRnit4Bxlhs1zyGfG7ksX1yCDgifo7C2E3La5MXG5GP6p4bCkkI0fMuBh_zuXkU8-eYQ-MFCUVjzmbhywpwpVrQhuGK0bDP3v_TtTulEgt4_89JVAs8kDXSE7_UMxA7qeYdEsTjuoxadxTvHx5gwOSuIS3HLdwA6rySnBezlOB1VdN5gkWEI_91VdvIH8OprrMsCzhOojYw981UVStHZNIC_K5VDiiO_5mPANOjlggJyquCWlvA_PV7QrkFkJtjm_FdnQpMwdvEFYys8vKrdpTy4jC0-qKSQNd3kQiqXTcSa52OQY0i-tTEjgIoqqs9Gh9mK6YgIhf8AWgPdKfGDLJOhNOyCtwB1CCTSXIsYrpPV2XcrFYYCzzqzWcLAaV0Hc-HPn54IOPwqC4-JXwfgqdKmcnL4zw91MrjJKRJZbHc0TjbbJWP0vy5E2HMEzIN7-lVnaZI6289sOWM0k3Dg0Z_XGL0LD4c91riXyf5pY3lpM2E8DmKZYjq0qgs5AGfYjqx24-jnO2wunMe3ebUlGl3MSgKVmNkgD8o-TWTAnoRK_BuYGEBaHdwCEkP8kIpJOG9J8zc_6A60w7F1eBjl_z1yue8VK_ftpDdeWFRsKRQ7SqZNIUzK26bdFD3MYIc3jh2gvSbCID2XCIPW96i3fZT17OpOAvZldJPt8cZKIyo7KeQd2HHq5lP4QgH2jecpr7lOUAOj9wDXawyan7gb80nJRmpvAv6AdlEkrCajyO_qRv4k1JMtyRbKHPcju1miFTKFpYOejSt42yRPVa3KY7K4C6egMByxeQBcLpaTBcDXGhGkwNtyf85tvgEn6BiraLx1XVXj3aAjOE9jozHEPWbDifFLijqDIcPrlThwr38BBrgqhBokgZQSD8WZQ3m6S6m5XTuM9gB2NaA6o25268qYfpqRqp1PgymGKY_X31iUbem_aNEr16P-M8-S9Uyof45zYAc8Gp2Cbr9ku0ZCuWxs88x8rp-dtwTMs12Po7Ow16sCFSIkaDOcWv4w_Sa5zmwm3wgGECvftQfcfnBPYlnYVpDc2MRipHRPVUz-AUVWXAydZZi7-Sbmx6gAAAB_DAAT-kNjgYHwJCdP71EE5mOlOWSU4E2gfDSyfIzR4CuyJzJt2JcXdDoCcjO3zsD27icSxHL6-hnq4Gx9EtDyiXS7AKhhCMMeKuv2xQVbyFV6z_eIcyMSwjZkiarMvs5WLAYPT6kigtfEhRrsZiNcGlkn3EcWlMwIZkvgtF5f0iv0Ww1DJEqWJg9ktp5fsY1xUX0oTdzxLQx3HJ-fskObQEeT3wRwJfNCSfqbNT3ohSP6XRlWLdf8-o7qnVOc7u4O2yRu1zsJyY48Apzx__FwdC_H9BlbLDNBvyMmuY0_XajjhnZtE6_gaLuJpJ7CecsWClGwgtppUBUboyN2_N55yb8JC8nKMEUMyMlon6di7tRWdKQMsNhf5DTvnAzZx_t7Ahz_nAK-icW4VvCJaanEZ_vMVz8UaI_cvqHwqZsie5yoBwEIiZoOwHxQfkk1dAtrMKs_YIo8T7lPXftGLk-yXvySvTULn8Kp6i8rVQvV_lddpNzzbZ0KX2CJGFgVQmwoTsdb_qMV1v9CfPJxmY9Y9DTl9W55daYPaeOl0EaoHOz8X4tz6YDA8oR2VafbkcAHws2JIyiG9dl99a04ZQIaEzQ9zOQM7qDE3Sj0xS72tWNdJaZs75mgB2vnWKm-7sNBhonGMuwPXCQCeh-qAAQmCEQq-YVH-zDM3KQtkgm8dFSgK00aNeRzrF5P7enssz6yx_zUntm00
+
+

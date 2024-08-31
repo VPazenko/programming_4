@@ -1,0 +1,93 @@
+Exercise 2: The factory.
+
+- What is a factory?
+
+factory is a program element that creates a parser of the required type on the basis of a request. 
+All possible variants are defined in parser_types.py
+
+- Does the implementation of the factory method follow the Interface Segregation Principle?
+Yes. Only the methods required for a specific parser are used.
+
+Exercise 3: Single reponsibility¶
+
+ - Review the python files starting with Ccs. Are those files adhering to the single-responsibility principle: 
+ "Every class should have only one responsibility”?
+
+class CcsClassification. Data extraction and processing with pandas.
+class CcsHospitalDataExtracter receiving a report and drawing a plot.
+class CcsHospitalInfo selecting data for one hospital and saving it to a csv file
+
+Exercise 4: The base classes¶
+
+- In the code, several base classes are used. Can you find examples of the Liskov substitution principle: 
+"Functions that use pointers or references to base classes must be able to use objects of derived classes 
+without knowing it." Explain your answer.
+
+For example HsmrParser is an abstract class, HsmrPdfParser and HsmrTextParser are subclasses. 
+In HsmrReportHandler class (get_ccs_info method), for example, the first step is to select a parser (subclass) 
+based on the data format, and after that methods common for these subclasses are used ( because these methods 
+are defined in the parent class and are inherited by both subclasses).
+
+Exercise 5. The local settings object
+
+- Search for the Settings class. What makes this class a singleton object and is a singleton object SOLID?
+
+To make a class a Singleton, the following approach is typically used:
+Private Constructor: The constructor is made private or protected so that the class cannot be 
+instantiated directly from outside the class.
+Static Instance: A static variable is used to hold the single instance of the class.
+Public Access Method: A public static method (e.g., get_instance()) is provided to return the instance of the class. 
+If the instance doesn't exist yet, it is created; otherwise, the existing instance is returned.
+All of this was done.
+
+Is a Singleton Object SOLID? (Chat_gpt edition)
+The Singleton pattern has its advantages, but whether it adheres to the SOLID principles can be a matter of debate:
+
+Single Responsibility Principle (SRP):
+Pro: The Singleton pattern can adhere to SRP if the singleton class only manages one specific responsibility, such as managing settings.
+Con: Often, Singletons end up managing more than one responsibility, violating SRP.
+
+Open/Closed Principle (OCP):
+Pro: The Singleton class can be extended without modifying its source code if designed properly.
+Con: Since only one instance can exist, extending the class could lead to complications or unintended side effects.
+
+Liskov Substitution Principle (LSP):
+Pro: It doesn't inherently violate LSP as long as it is designed as a standard class.
+Con: Substitution might not be straightforward if you need to replace the Singleton with a subclass or mock in testing.
+
+Interface Segregation Principle (ISP):
+Neutral: The Singleton pattern does not directly impact ISP.
+
+Dependency Inversion Principle (DIP):
+Con: Singletons can lead to tight coupling, making it difficult to replace or mock the Singleton 
+in tests or alternative implementations, thus violating DIP.
+
+In conclusion, while the Singleton pattern can be compatible with SOLID principles in some cases, 
+it often leads to violations of SRP, OCP, and DIP.
+
+
+- The hospital types codes are stored in a python module hospital_types.py. Is this a logical solution?
+It can be a good solution:
+1. It separates these codes from the main logic of the app, making the code cleaner and more organized.
+2. Updates to these codes can be done in a single location.
+3. It improves readability 
+
+Drawbacks:
+1. The codes are hardcoded into the module (difficult to update).
+
+- Is there an alternative solution for these kinds of local settings and parameters? 
+Please elaborate, explaining the pros and cons of your alternative(s).
+
+Alternative Solution - Use a Configuration File (JSON, YAML)
+Pros:
+1. Configuration files can be easily read and modified
+Cons:
+1. Mistakes in the configuration file can lead to runtime errors.
+
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+{
+    "training_file": "./training_data/file_for_modelling.csv",
+    "input_directory": "./input",
+    "output_directory": "./output",
+    "img_directory": "./img",
+    "sensors_of_interest": [
+        "sensor_02",
+        "sensor_11"
+    ],
+    "watchdog_interval_sec": 10
+}
