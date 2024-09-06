@@ -24,6 +24,8 @@ class Atom:
         return self
     
 
+    # You could have implemented only one method and call this in the corresponding
+    # other mathematical methods; now you have quite a lot of duplicate code.
     def __gt__(self, other):
         if self.atomic_number != other.atomic_number:
             raise Exception("Atomic numbers (number of protons) not equal!")
@@ -57,6 +59,8 @@ class Molecule:
     """
     def __init__(self, list_of_tuples):
         self.format = list_of_tuples
+        # why this seperate method? You could have done just the same in either 
+        # __str__ or __repr__...
         self.repr = self.text()
 
     def text(self):
@@ -120,6 +124,9 @@ class Chloroplast:
         '''
         try:
             print(molecule)
+            # Why this overly complex way of calling the correct function?
+            # You could just have an input-check and add the corresponding
+            # field.
             func_name = f'add_{molecule}'
             func = getattr(self, func_name)
             func()
@@ -132,6 +139,9 @@ class Chloroplast:
             if (self.water >= 6) and (self.co2 >= 12):
                 self.water -= 6
                 self.co2 -= 12
+                # In this setup you are always returning the same molecules, even if 
+                # this chloroplast continues to function after the photosynthesis
+                # (which it does). 
                 molecule_list += [(self.C6H12O6, 1), (self.O2, 6)]
         
         return molecule_list

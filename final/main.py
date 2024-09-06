@@ -30,12 +30,15 @@ def main(df):
 
     df_data_list = [str(df.iloc[0,1]), str(df.iloc[-1,1])]
     data = open_config_data()
+    # don't concatenate strings if you can help it. Use formatted strings.
     name = data['output_directory'] + '/' + df_data_list[0].split()[0] + '_to_' + df_data_list[1].split()[0] + '.csv'
     
     # Save data with predictions in starting format
     df.iloc[:,1:].to_csv(name)
     AddToLogFile.add_new_line('Saving predictions')
 
+    # You make a new drawer every time; I *think* this will be a problem eventually for
+    # the garbage collector (same with the Model at the beginning of this method).
     draw = Drawer(df)
 
 
